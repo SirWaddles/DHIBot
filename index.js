@@ -5,7 +5,7 @@ const { DiscordToken } = require('./tokens');
 class OverwatchRollCaller {
 	constructor() {
 		this.requiredPlayers = 2;
-		this.joinCommand = "!hanzo";
+		this.joinCommand = "!join";
 		this.roleName = "Overwatch";
 		this.timerDuration = 30 * 60; // 30 minutes yo
 
@@ -20,7 +20,7 @@ class OverwatchRollCaller {
 			this.players = 1;
 			this.rollcallExpireTime = msg.createdAt.getTime() / 1000 + this.timerDuration;
 			this.pingChannel = msg.channel;
-			msg.channel.send("Someone wants to play Overwatch. " + this.players + "/" + this.requiredPlayers + "type " + this.joinCommand + " to join");
+			msg.channel.send("Someone wants to play Overwatch. " + this.players + "/" + this.requiredPlayers + " type " + this.joinCommand + " to join");
 			return;
 		}
 
@@ -29,7 +29,7 @@ class OverwatchRollCaller {
 				this.players++;
 
 				if (this.players >= this.requiredPlayers) {
-					this.pingChannel.send("Hey @Waddlesworth, " + this.requiredPlayers + " people want to play Overwatch!");
+					this.pingChannel.send("Hey <@229419335930609664>, " + this.requiredPlayers + " people want to play Overwatch!");
 					this.reset();
 				}
 
