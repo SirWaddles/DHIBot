@@ -16,16 +16,16 @@ class OverwatchRollCaller {
 
 	processMsg(msg) {
 
-		if (msg.mentions.roles.filter(v => v.name == this.roleName).length > 0) {
+		if (msg.mentions.roles.filter(v => v.name == this.roleName).size > 0) {
 			this.players = 1;
-			this.rollcallExpireTime = msg.createdAt().getTime() / 1000 + this.timerDuration;
+			this.rollcallExpireTime = msg.createdAt.getTime() / 1000 + this.timerDuration;
 			this.pingChannel = msg.channel;
 			msg.channel.send("Someone wants to play Overwatch. " + this.players + "/" + this.requiredPlayers + "type " + this.joinCommand + " to join");
 			return;
 		}
 
 		if (msg.content.toLowerCase() == this.joinCommand) {
-			if (msg.createdAt().getTime() / 1000 < this.rollcallExpireTime) {
+			if (msg.createdAt.getTime() / 1000 < this.rollcallExpireTime) {
 				this.players++;
 
 				if (this.players >= this.requiredPlayers) {
