@@ -2,53 +2,51 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const { DiscordToken } = require('./tokens');
 
-var overwatchRollCall = {
+class OverwatchRollCaller {
+	constructor() {
+		this.requiredPlayers = 2;
+		this.joinCommand = "!hanzo";
+		this.roleName = "Overwatch";
+		this.timerDuration = 30 * 60; // 30 minutes yo
 
-	requiredPlayers : 2,
-	joinCommand : "!hanzo",
-	roleName : "Overwatch",
-	timerDuration : 30 * 60, // 30 minutes yo
-	
-	players : 0,
-	rollcallExpireTime : 0,
+		this.players = 0;
+		thos.rollcallExpireTime = 0;
+		this.pingChannel = false;
+	}
 
-	processMsg : function(msg){
+	processMsg(msg) {
 
-		if(msg.mentions.roles.name == roleName)
-		{
-			players = 1;
-			rollcallExpireTime = msg.createdAt().getTime() / 1000 + timerDuration;
-
-			client.defaultChannel.send("Someone wants to play Overwatch. "+
-				players+"/"+required+"type "+joinCommand+" to join");
+		if (msg.mentions.roles.filter(v => v.name == this.roleName).length > 0) {
+			this.players = 1;
+			this.rollcallExpireTime = msg.createdAt().getTime() / 1000 + timerDuration;
+			this.pingChannel = msg.channel;
+			msg.channel.send("Someone wants to play Overwatch. " + players + "/" + required + "type " + joinCommand + " to join");
+			return;
 		}
-		else if(msg.content.tolower() == joinCommand)
-		{
-			if(msg.createdAt().getTime() / 1000 < rollcallExpireTime)
-			{
-				players++;
-				
-				if(players == requiredPlayers)
-				{
-					client.defaultChannel.send("Hey @Waddlesworth, "+requiredPlayers+" people want to play Overwatch!");
-					reset();
+
+		if(msg.content.tolower() == this.joinCommand) {
+			if (msg.createdAt().getTime() / 1000 < this.rollcallExpireTime) {
+				this.players++;
+
+				if(players >= requiredPlayers) {
+					this.pingChannel.send("Hey @Waddlesworth, " + requiredPlayers + " people want to play Overwatch!");
+					this.reset();
 				}
 
 				msg.delete();
 			}
-					
-			msg.reply("There is no active roll call for Overwatch");		
-		}
-	},
 
-	reset : function()
-	{
-		players = 0;
-		rollcallExpireTime = 0;
+			msg.reply("There is no active roll call for Overwatch");
+		}
+	}
+
+	reset() {
+		this.players = 0;
+		this.rollcallExpireTime = 0;
 	}
 }
 
-overwatchRollCall = new overwatchRollCall();
+const overwatchRollCall = new OverwatchRollCaller();
 
 client.on('message', msg => {
     if (msg.content == '!roll') {
