@@ -10,7 +10,7 @@ class OverwatchRollCaller {
 		this.timerDuration = 30 * 60; // 30 minutes yo
 
 		this.players = 0;
-		thos.rollcallExpireTime = 0;
+		this.rollcallExpireTime = 0;
 		this.pingChannel = false;
 	}
 
