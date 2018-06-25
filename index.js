@@ -24,7 +24,7 @@ class OverwatchRollCaller {
 			return;
 		}
 
-		if (msg.content.tolower() == this.joinCommand) {
+		if (msg.content.toLowerCase() == this.joinCommand) {
 			if (msg.createdAt().getTime() / 1000 < this.rollcallExpireTime) {
 				this.players++;
 
