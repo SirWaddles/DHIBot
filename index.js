@@ -18,22 +18,23 @@ class OverwatchRollCaller {
 
 		if (msg.mentions.roles.filter(v => v.name == this.roleName).length > 0) {
 			this.players = 1;
-			this.rollcallExpireTime = msg.createdAt().getTime() / 1000 + timerDuration;
+			this.rollcallExpireTime = msg.createdAt().getTime() / 1000 + this.timerDuration;
 			this.pingChannel = msg.channel;
-			msg.channel.send("Someone wants to play Overwatch. " + players + "/" + required + "type " + joinCommand + " to join");
+			msg.channel.send("Someone wants to play Overwatch. " + this.players + "/" + this.requiredPlayers + "type " + this.joinCommand + " to join");
 			return;
 		}
 
-		if(msg.content.tolower() == this.joinCommand) {
+		if (msg.content.tolower() == this.joinCommand) {
 			if (msg.createdAt().getTime() / 1000 < this.rollcallExpireTime) {
 				this.players++;
 
-				if(players >= requiredPlayers) {
-					this.pingChannel.send("Hey @Waddlesworth, " + requiredPlayers + " people want to play Overwatch!");
+				if (this.players >= this.requiredPlayers) {
+					this.pingChannel.send("Hey @Waddlesworth, " + this.requiredPlayers + " people want to play Overwatch!");
 					this.reset();
 				}
 
 				msg.delete();
+				return;
 			}
 
 			msg.reply("There is no active roll call for Overwatch");
