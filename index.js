@@ -54,7 +54,7 @@ client.on('message', msg => {
         msg.reply('4'); // Chosen by fair dice roll - guranteed to be random.
         return;
     }
-    if ( msg.content.includes('dayz') ) {
+    if ( msg.content.toLowerCase().includes('dayz') ) {
         msg.reply('bad game'); // lets annoy sylver and spiffy
         return;
     }
