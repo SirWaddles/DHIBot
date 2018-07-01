@@ -48,9 +48,10 @@ class OverwatchRollCaller {
 }
 
 const overwatchRollCall = new OverwatchRollCaller();
+let banList = {};
 
 client.on('message', msg => {
-	if (msg.author.id == '171926582414409728') {
+	if (banList.hasOwnProperty(msg.author.id)) {
 		msg.delete();
 		return;
 	}
@@ -58,8 +59,20 @@ client.on('message', msg => {
         msg.reply('4'); // Chosen by fair dice roll - guranteed to be random.
         return;
     }
-    if ( msg.content.toLowerCase().includes('dayz') ) {
+    if (msg.content.toLowerCase().includes('dayz')) {
         msg.reply('bad game'); // lets annoy sylver and spiffy
+        return;
+    }
+    if (msg.content.startsWith("!mute ")) {
+        const id = msg.content.substring(6);
+        banList[id] = true;
+        msg.reply('Muted ' + id);
+        return;
+    }
+    if (msg.content.startsWith("!unmute ")) {
+        const id = msg.content.substring(8);
+        delete banList[id];
+        msg.reply('Unmuted ' + id);
         return;
     }
 
