@@ -50,6 +50,10 @@ class OverwatchRollCaller {
 const overwatchRollCall = new OverwatchRollCaller();
 
 client.on('message', msg => {
+	if (msg.author.id == '171926582414409728') {
+		msg.delete();
+		return;
+	}
     if (msg.content == '!roll') {
         msg.reply('4'); // Chosen by fair dice roll - guranteed to be random.
         return;
