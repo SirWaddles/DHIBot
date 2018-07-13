@@ -98,8 +98,7 @@ client.on('message', msg => {
         return;
     }
 	if (msg.content.startsWith("!8ball ")) {
-		const i = eightBallResults[ Math.floor( Math.random() * eightBallResults.length ) ];
-		msg.reply( eightBallResults[i] );
+		msg.reply( eightBallResults[ Math.floor( Math.random() * eightBallResults.length ) ] );
 		return;
 	}
 
