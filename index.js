@@ -14,8 +14,6 @@ class OverwatchRollCaller {
 		this.pingChannel = false;
 	}
 	
-	dfgdfgdgdfvsdf
-
 	processMsg(msg) {
 
 		if (msg.mentions.roles.filter(v => v.name == this.roleName).size > 0) {
