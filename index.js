@@ -81,6 +81,10 @@ client.on('message', msg => {
         msg.reply('4'); // Chosen by fair dice roll - guranteed to be random.
         return;
     }
+    if (msg.content.toLowerCase() == 'unatco' || msg.content.toLowerCase() == 'unatco?') {
+        msg.reply('No, savage');
+        return;
+    }
     if (msg.content.toLowerCase().includes('dayz')) {
         msg.reply('bad game'); // lets annoy sylver and spiffy
         return;
