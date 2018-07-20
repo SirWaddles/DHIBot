@@ -101,6 +101,11 @@ client.on('message', msg => {
 		msg.reply( eightBallResults[ Math.floor( Math.random() * eightBallResults.length ) ] );
 		return;
 	}
+	if(msg.author.id == '436684273131716611')
+	{
+		msg.react('😠');
+		return;
+	}
 
     overwatchRollCall.processMsg(msg);
 });
