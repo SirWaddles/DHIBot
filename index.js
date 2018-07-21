@@ -73,6 +73,7 @@ let eightBallResults = [
 ];
 
 client.on('message', msg => {
+	if (msg.author.id == '136432174336442368') return;
 	if (banList.hasOwnProperty(msg.author.id)) {
 		msg.delete();
 		return;
