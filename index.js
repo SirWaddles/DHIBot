@@ -13,7 +13,7 @@ class OverwatchRollCaller {
 		this.rollcallExpireTime = 0;
 		this.pingChannel = false;
 	}
-	
+
 	processMsg(msg) {
 
 		if (msg.mentions.roles.filter(v => v.name == this.roleName).size > 0) {
@@ -77,6 +77,18 @@ client.on('message', msg => {
 		msg.delete();
 		return;
 	}
+	if (msg.content.startsWith('!purge')) {
+		let minutes = parseInt(msg.content.substring(7)) || 10;
+		let filterTime = msg.createdAt.getTimestamp() - minutes * 60 * 1000;
+		msg.channel.fetchMessages({ before: msg.id, limit: 200}).then(res => {
+			res.forEach(foundMsg => {
+				if (foundMsg.createdAt.getTimestamp() > filterTime) {
+					foundMsg.delete();
+				}
+			});
+		});
+		return;
+	}
     if (msg.content == '!roll') {
         msg.reply('4'); // Chosen by fair dice roll - guranteed to be random.
         return;
@@ -103,11 +115,6 @@ client.on('message', msg => {
     }
 	if (msg.content.startsWith("!8ball ")) {
 		msg.reply( eightBallResults[ Math.floor( Math.random() * eightBallResults.length ) ] );
-		return;
-	}
-	if(msg.author.id == '436684273131716611')
-	{
-		msg.channel.send("!shop");
 		return;
 	}
 
