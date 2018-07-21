@@ -79,10 +79,10 @@ client.on('message', msg => {
 	}
 	if (msg.content.startsWith('!purge')) {
 		let minutes = parseInt(msg.content.substring(7)) || 10;
-		let filterTime = msg.createdAt.getTimestamp() - minutes * 60 * 1000;
+		let filterTime = msg.createdAt.getTime() - minutes * 60 * 1000;
 		msg.channel.fetchMessages({ before: msg.id, limit: 200}).then(res => {
 			res.forEach(foundMsg => {
-				if (foundMsg.createdAt.getTimestamp() > filterTime) {
+				if (foundMsg.createdAt.getTime() > filterTime) {
 					foundMsg.delete();
 				}
 			});
