@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "discord.js": "^11.3.2"
+    "discord.js": "^11.3.2",
+    "webpack": "^4.16.1",
+    "webpack-cli": "^3.1.0"
   }
 }
