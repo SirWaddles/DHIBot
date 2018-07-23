@@ -78,6 +78,10 @@ client.on('message', msg => {
 		msg.delete();
 		return;
 	}
+	if (msg.content.startsWith('!system')) {
+		msg.guild.systemChannel.send("This 'ere ur system channel, whatever that means.");
+		return;
+	}
 	if (msg.content.startsWith('!purge')) {
 		let minutes = parseInt(msg.content.substring(7)) || 10;
 		let filterTime = msg.createdAt.getTime() - minutes * 60 * 1000;
