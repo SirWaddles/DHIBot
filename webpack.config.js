@@ -9,4 +9,7 @@ module.exports = {
         path: path.resolve(__dirname, 'build/'),
     },
     target: 'node',
+    resolve: {
+        extensions: ['.js', '.json'],
+    },
 };
