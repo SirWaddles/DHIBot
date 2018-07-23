@@ -5,9 +5,9 @@ class DayzModule extends BaseModule {
         msg.reply('Bad game!');
     }
 
-	testMessage(msg) {
-		return msg.content.toLowerCase().includes('dayz');
-	}
+    testMessage(msg) {
+        return msg.content.toLowerCase().includes('dayz');
+    }
 }
 
 export default DayzModule;

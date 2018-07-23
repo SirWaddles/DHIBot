@@ -5,9 +5,9 @@ class Unatco extends BaseModule {
         msg.reply('No, savage');
     }
 
-	testMessage(msg) {
-		return msg.content.toLowerCase() == 'unatco' || msg.content.toLowerCase() == 'unatco?';
-	}
+    testMessage(msg) {
+        return msg.content.toLowerCase() == 'unatco' || msg.content.toLowerCase() == 'unatco?';
+    }
 }
 
 export default Unatco;
