@@ -5,16 +5,16 @@ const badGames = [
     'pubg',
     'overwatch',
     'fortnite',
-    'gmod',
+    /\bgmod\b/,
     'garrys mod',
     'garry\'s mod',
     'titanfall',
     'ttf2',
     'runescape',
     'world of warcraft',
-    ' eve',
+    /\beve\b/,
     'payday',
-    'arma',
+    /\barma\b/,
     'fallout',
     'overcooked',
     'borderlands',
@@ -29,9 +29,14 @@ class BadGamesModule extends BaseModule {
     }
 
     testMessage(msg) {
+        const lowerMessage = msg.content.toLowerCase();
         for (const game of badGames) {
-            if (msg.content.toLowerCase().includes(game)) {
-                return true;    
+            if (game instanceof RegExp) {
+                if (game.test(lowerMessage)) {
+                    return true;
+                }
+            } else if (msg.content.toLowerCase().includes(game)) {
+                return true;
             }
         }
         return false;
