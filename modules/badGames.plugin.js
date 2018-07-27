@@ -12,7 +12,7 @@ const badGames = [
     'ttf2',
     'runescape',
     'world of warcraft',
-    'eve',
+    ' eve',
     'payday',
     'arma',
     'fallout',
