@@ -13,7 +13,7 @@ const badGames = [
     'runescape',
 ];
 
-class BagGamesModule extends BaseModule {
+class BadGamesModule extends BaseModule {
     receiveMessage(msg) {
         msg.reply('Bad game!');
     }
