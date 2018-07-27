@@ -11,6 +11,16 @@ const badGames = [
     'titanfall',
     'ttf2',
     'runescape',
+    'world of warcraft',
+    'eve',
+    'payday',
+    'arma',
+    'fallout',
+    'overcooked',
+    'borderlands',
+    'apb',
+    'minecraft',
+    'killing floor',
 ];
 
 class BadGamesModule extends BaseModule {
