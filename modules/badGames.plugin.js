@@ -25,7 +25,7 @@ const badGames = [
 
 class BadGamesModule extends BaseModule {
     receiveMessage(msg) {
-        msg.reply('Bad game!');
+        msg.reply('Bad game!').then(msg => msg.delete(5000));
     }
 
     testMessage(msg) {
