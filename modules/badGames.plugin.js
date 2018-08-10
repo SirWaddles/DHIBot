@@ -21,6 +21,7 @@ const badGames = [
     'apb',
     'minecraft',
     'killing floor',
+	'monster hunter',
 ];
 
 class BadGamesModule extends BaseModule {
