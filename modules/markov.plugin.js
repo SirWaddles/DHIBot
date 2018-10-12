@@ -12,12 +12,12 @@ markov.buildCorpus();
 class MarkovModule extends BaseModule {
     receiveMessage(msg) {
         markov.generateSentence().then(sentence => {
-            msg.reply(sentence.string);
+            msg.channel.send(sentence.string);
         });
     }
 
     testMessage(msg) {
-        return msg.content == '!markov';
+        return msg.mentions.users.map(v => v.id).includes('460699949688946688');
     }
 }
 
