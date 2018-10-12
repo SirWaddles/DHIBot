@@ -7,3 +7,4 @@ yarn-error.log*
 node_modules/
 tokens.js
 build/
+modules/markov.json
