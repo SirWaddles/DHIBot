@@ -22,6 +22,7 @@ const badGames = [
     'minecraft',
     'killing floor',
 	'monster hunter',
+    'warframe'
 ];
 
 class BadGamesModule extends BaseModule {
