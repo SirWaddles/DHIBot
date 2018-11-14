@@ -17,8 +17,13 @@ class MarkovModule extends BaseModule {
     }
 
     testMessage(msg) {
+        markovData.push(msg.content);
         return msg.mentions.users.map(v => v.id).includes('460699949688946688');
     }
 }
+
+setInterval(() => {
+    fs.writeFileSync('./modules/markov.json', JSON.stringify(markovData));
+}, 1000 * 60 * 30); // 30 minutes
 
 export default MarkovModule;
