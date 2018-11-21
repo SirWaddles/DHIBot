@@ -27,10 +27,11 @@ const badGames = [
 
 class BadGamesModule extends BaseModule {
     receiveMessage(msg) {
-        msg.reply('Bad game!').then(msg => msg.delete(20000));
+        msg.reply('Bad game!').then(msg => msg.delete(30000));
     }
 
     testMessage(msg) {
+        if (Math.random() < 0.4) return false;
         const lowerMessage = msg.content.toLowerCase();
         for (const game of badGames) {
             if (game instanceof RegExp) {
