@@ -8,7 +8,6 @@ const MessageModules = messageModules.map(v => new v.default());
 
 client.on('message', msg => {
     if (msg.author.id == '171926582414409728') return;
-    if (msg.author.id == '154547821058588672') return;
     if (MessageModules.map(v => v.filterMessage(msg)).filter(v => v === false).length > 0) return;
     let matchedModules = MessageModules.filter(v => v.testMessage(msg));
     matchedModules.forEach(v => v.receiveMessage(msg));
