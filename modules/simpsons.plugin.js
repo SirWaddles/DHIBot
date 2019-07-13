@@ -69,7 +69,7 @@ class SimpsonsMarkovModule extends BaseModule {
     }
 
     testMessage(msg) {
-        return msg.content.toLowerCase() == '!simpsons';
+        return msg.content.toLowerCase().startsWith('!simpsons');
     }
 }
 
