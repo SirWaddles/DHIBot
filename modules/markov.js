@@ -1,17 +1,19 @@
 import BaseModule from './module';
 import Markov from 'markov-strings';
-import fs from 'fs';
-
-const markovData = JSON.parse(fs.readFileSync('./modules/markov.json')).map(x => x.trim());
-const markov = new Markov(markovData, {
-    stateSize: 3
-});
-markov.buildCorpus();
 
 class MarkovModule extends BaseModule {
+    constructor(markovData) {
+        super();
+        const markov = new Markov(markovData, {
+            stateSize: 3
+        });
+        markov.buildCorpus();
+        this.markov = markov;
+    }
+
     generateString(filter) {
         try {
-            const result = markov.generate({
+            const result = this.markov.generate({
                 maxTries: 1000,
                 filter
             });
@@ -22,12 +24,14 @@ class MarkovModule extends BaseModule {
         }
     }
 
+    removeBotTrigger(msg, content) {
+        return content;
+    }
+
     receiveMessage(msg) {
         // Grab all the words the user pinged the bot with that are
         // long enough.
-        const words = msg.content
-            .toLowerCase()
-            .replace(`<@${msg.client.user.id}>`, '')
+        const words = this.removeBotTrigger(msg, msg.content.toLowerCase())
             .split(' ')
             .map(x => x.trim())
             .filter(x => x.length >= 3);
@@ -55,7 +59,7 @@ class MarkovModule extends BaseModule {
             result = this.generateString(fullFilter);
         }
 
-        // If that didn't work, or these no user input words, try finding without words
+        // If that didn't work, or there's no user input words, try finding without words
         if (result === null) {
             result = this.generateString(normalFilter);
         }
@@ -67,19 +71,6 @@ class MarkovModule extends BaseModule {
             msg.channel.send(result.string);
         }
     }
-
-    testMessage(msg) {
-        // Only save messages that aren't from a bot
-        if (!msg.author.bot) {
-            markovData.push(msg.content);
-        }
-
-        return msg.mentions.users.map(v => v.id).includes(msg.client.user.id);
-    }
 }
-
-setInterval(() => {
-    fs.writeFileSync('./modules/markov.json', JSON.stringify(markovData));
-}, 1000 * 60 * 30); // 30 minutes
 
 export default MarkovModule;
