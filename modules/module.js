@@ -1,4 +1,8 @@
 class BaseModule {
+    constructor(db) {
+        this.db = db;
+    }
+
     receiveMessage(msg) {
 
     }

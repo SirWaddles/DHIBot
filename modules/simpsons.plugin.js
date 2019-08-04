@@ -2,10 +2,10 @@ import MarkovModule from './markov';
 import fs from 'fs';
 
 class SimpsonsMarkovModule extends MarkovModule {
-    constructor() {
+    constructor(db) {
         console.log('Building Simpsons markov corpus...');
         const simpsonsData = JSON.parse(fs.readFileSync('./modules/simpsons.json')).map(x => x.trim());
-        super(simpsonsData);
+        super(simpsonsData, db);
         console.log('Done!');
     }
 

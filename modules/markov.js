@@ -2,8 +2,8 @@ import BaseModule from './module';
 import Markov from 'markov-strings';
 
 class MarkovModule extends BaseModule {
-    constructor(markovData) {
-        super();
+    constructor(markovData, db) {
+        super(db);
         const markov = new Markov(markovData, {
             stateSize: 3
         });

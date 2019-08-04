@@ -1,8 +1,10 @@
 {
   "dependencies": {
-    "discord.js": "^11.3.2",
-    "markov-strings": "^2.0.2",
-    "webpack": "^4.16.1",
-    "webpack-cli": "^3.1.0"
+    "better-sqlite3": "^5.4.1",
+    "discord.js": "^11.5.1",
+    "markov-strings": "^2.0.4",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-node-externals": "^1.7.2"
   }
 }
