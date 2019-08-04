@@ -10,3 +10,4 @@ build/
 modules/markov.json
 modules/simpsons.json
 data.db
+data.db-*
