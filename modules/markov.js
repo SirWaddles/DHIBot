@@ -4,6 +4,13 @@ import Markov from 'markov-strings';
 class MarkovModule extends BaseModule {
     constructor(markovData, db) {
         super(db);
+        this.buildCorpus(markovData);
+    }
+
+    buildCorpus(markovData) {
+        if (markovData.length == 0) {
+            markovData.push('Hello World!');
+        }
         const markov = new Markov(markovData, {
             stateSize: 3
         });

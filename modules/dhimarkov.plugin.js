@@ -7,6 +7,11 @@ class DHIMarkovModule extends MarkovModule {
         const markovData = db.getAllNonBotMessages();
         super(markovData, db);
         console.log('Done!');
+
+        const self = this;
+        setInterval(() => {
+            self.buildCorpus(self.db.getAllNonBotMessages());
+        }, 1000 * 60 * 60 * 24); // 1 day
     }
 
     removeBotTrigger(msg, content) {
