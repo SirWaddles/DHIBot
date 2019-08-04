@@ -38,12 +38,18 @@ class ReindexModule extends BaseModule {
     async indexAllMessages(channels) {
         this.db.clearIndex();
         for (const channel of channels.values()) {
-            await this.indexAllChannelMessages(channel);
+            try {
+                await this.indexAllChannelMessages(channel);
+            } catch (error) {
+                if (error.code !== 50001) { // Ignore "Missing Access"
+                    throw error;
+                }
+            }
         }
     }
 
     receiveMessage(msg) {
-        const channels = msg.channel.guild.channels.filter(x => x.type == 'text');
+        const channels = msg.client.channels.filter(x => x.type == 'text');
         msg.reply(`Indexing ${channels.size} channels`);
         this.indexAllMessages(channels)
           .then(() => msg.reply(`Finished indexing`))
