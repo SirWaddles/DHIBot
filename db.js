@@ -19,6 +19,21 @@ class DB {
         this.removeReactionStmt = this.db.prepare('DELETE FROM reactions WHERE message_id = :message_id AND user_id = :user_id AND emoji = :emoji');
         this.removeMsgStmt = this.db.prepare('DELETE FROM messages WHERE id = :message_id');
         this.markovRefStmt = this.db.prepare('REPLACE INTO markov_refs VALUES (:markov_msg_id, :ref_msg_id)');
+        this.channelStmt = this.db.prepare('REPLACE INTO channels VALUES (:id, :guild_id, :name, :type)');
+
+        this.latestMarkovStmt = this.db.prepare('SELECT messages.id, messages.content FROM markov_refs LEFT JOIN messages ON messages.id = markov_refs.markov_msg_id ORDER BY messages.timestamp DESC LIMIT 1');
+        this.latestMarkovStmt.safeIntegers();
+        this.nonBotMessagesStmt = this.db.prepare('SELECT messages.id, messages.content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
+        this.nonBotMessagesStmt.safeIntegers();
+        this.markovRefsStmt = this.db.prepare(`
+            SELECT messages.id AS 'messageID', channels.id AS 'channelID', channels.guild_id AS 'guildID', users.username, messages.content FROM markov_refs
+            INNER JOIN messages ON messages.id = markov_refs.ref_msg_id
+            INNER JOIN users ON messages.author_id = users.id
+            INNER JOIN channels ON messages.channel_id = channels.id
+            WHERE markov_refs.markov_msg_id = ?
+            ORDER BY messages.timestamp
+        `);
+        this.markovRefsStmt.safeIntegers();
 
         this.clearAllMessagesStmt = this.db.prepare('DELETE FROM messages');
         this.clearAllReactionsStmt = this.db.prepare('DELETE FROM reactions');
@@ -27,11 +42,23 @@ class DB {
     }
 
     getAllNonBotMessages() {
-        const stmt = this.db.prepare('SELECT messages.id, content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
-        return stmt.all().map(x => ({
+        return this.nonBotMessagesStmt.all().map(x => ({
             string: x.content,
             messageID: x.id
         }));
+    }
+
+    getLatestMarkovMessage() {
+        const result = this.latestMarkovStmt.get();
+        if (result) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    getMarkovReferences(markovMsgID) {
+        return this.markovRefsStmt.all(markovMsgID);
     }
 
     insertMarkovReference(markovMsg, referencedMsgID) {
@@ -76,6 +103,15 @@ class DB {
         });
 
         this.removeAllMessageReactions(msg);
+    }
+
+    insertChannel(channel) {
+        this.channelStmt.run({
+            id: channel.id,
+            guild_id: channel.guild.id,
+            name: channel.name,
+            type: channel.type
+        });
     }
 
     clearIndex() {
@@ -140,6 +176,8 @@ class DB {
                 await this.insertUserReaction(reaction, user);
             }
         }
+
+        this.insertChannel(msg.channel);
     }
 }
 

@@ -44,4 +44,10 @@ client.on('messageReactionRemoveAll', msg => {
     db.removeAllMessageReactions();
 });
 
+client.on('ready', () => {
+    for (const channel of client.channels.values()) {
+        db.insertChannel(channel);
+    }
+})
+
 client.login(DiscordToken);
