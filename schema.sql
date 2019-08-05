@@ -1,4 +1,11 @@
 BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "channels" (
+	"id"	INTEGER NOT NULL,
+	"guild_id"	INTEGER NOT NULL,
+	"name"	TEXT NOT NULL,
+	"type"	TEXT NOT NULL,
+	PRIMARY KEY("id")
+);
 CREATE TABLE IF NOT EXISTS "markov_refs" (
 	"markov_msg_id"	INTEGER NOT NULL,
 	"ref_msg_id"	INTEGER NOT NULL
