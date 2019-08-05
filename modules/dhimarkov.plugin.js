@@ -21,6 +21,12 @@ class DHIMarkovModule extends MarkovModule {
     testMessage(msg) {
         return msg.mentions.users.map(v => v.id).includes(msg.client.user.id);
     }
+
+    onMessageSent(originalMsg, markovMsg, markovResult) {
+        for (const ref of markovResult.refs) {
+            this.db.insertMarkovReference(markovMsg, ref.messageID);
+        }
+    }
 }
 
 export default DHIMarkovModule;

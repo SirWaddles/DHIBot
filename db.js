@@ -18,6 +18,7 @@ class DB {
         this.clearReactionStmt = this.db.prepare('DELETE FROM reactions WHERE message_id = :message_id');
         this.removeReactionStmt = this.db.prepare('DELETE FROM reactions WHERE message_id = :message_id AND user_id = :user_id AND emoji = :emoji');
         this.removeMsgStmt = this.db.prepare('DELETE FROM messages WHERE id = :message_id');
+        this.markovRefStmt = this.db.prepare('REPLACE INTO markov_refs VALUES (:markov_msg_id, :ref_msg_id)');
 
         this.clearAllMessagesStmt = this.db.prepare('DELETE FROM messages');
         this.clearAllReactionsStmt = this.db.prepare('DELETE FROM reactions');
@@ -26,8 +27,18 @@ class DB {
     }
 
     getAllNonBotMessages() {
-        const stmt = this.db.prepare('SELECT content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
-        return stmt.all().map(x => x.content);
+        const stmt = this.db.prepare('SELECT messages.id, content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
+        return stmt.all().map(x => ({
+            string: x.content,
+            messageID: x.id
+        }));
+    }
+
+    insertMarkovReference(markovMsg, referencedMsgID) {
+        this.markovRefStmt.run({
+            markov_msg_id: markovMsg.id,
+            ref_msg_id: referencedMsgID
+        });
     }
 
     insertUserReaction(reaction, user) {

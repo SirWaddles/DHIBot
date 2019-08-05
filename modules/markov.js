@@ -35,6 +35,10 @@ class MarkovModule extends BaseModule {
         return content;
     }
 
+    onMessageSent(originalMsg, markovMsg, markovResult) {
+
+    }
+
     receiveMessage(msg) {
         // Grab all the words the user pinged the bot with that are
         // long enough.
@@ -75,7 +79,7 @@ class MarkovModule extends BaseModule {
         if (result === null) {
             msg.channel.send('I don\'t know what to say');
         } else {
-            msg.channel.send(result.string);
+            msg.channel.send(result.string).then(markovMsg => this.onMessageSent(msg, markovMsg, result));
         }
     }
 }
