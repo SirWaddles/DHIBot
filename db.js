@@ -24,7 +24,7 @@ class DB {
 
         this.latestMarkovStmt = this.db.prepare('SELECT messages.id, messages.content FROM markov_refs LEFT JOIN messages ON messages.id = markov_refs.markov_msg_id ORDER BY messages.timestamp DESC LIMIT 1');
         this.latestMarkovStmt.safeIntegers();
-        this.nonBotMessagesStmt = this.db.prepare('SELECT messages.id, messages.content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0 LIMIT 10000');
+        this.nonBotMessagesStmt = this.db.prepare('SELECT messages.id, messages.content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
         this.nonBotMessagesStmt.safeIntegers();
         this.markovRefsStmt = this.db.prepare(`
             SELECT messages.id AS 'messageID', channels.id AS 'channelID', channels.guild_id AS 'guildID', users.username, messages.content FROM markov_refs
