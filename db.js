@@ -20,10 +20,11 @@ class DB {
         this.removeMsgStmt = this.db.prepare('DELETE FROM messages WHERE id = :message_id');
         this.markovRefStmt = this.db.prepare('REPLACE INTO markov_refs VALUES (:markov_msg_id, :ref_msg_id)');
         this.channelStmt = this.db.prepare('REPLACE INTO channels VALUES (:id, :guild_id, :name, :type)');
+        this.roleStmt = this.db.prepare('REPLACE INTO roles VALUES (:id, :name, :guild_id)');
 
         this.latestMarkovStmt = this.db.prepare('SELECT messages.id, messages.content FROM markov_refs LEFT JOIN messages ON messages.id = markov_refs.markov_msg_id ORDER BY messages.timestamp DESC LIMIT 1');
         this.latestMarkovStmt.safeIntegers();
-        this.nonBotMessagesStmt = this.db.prepare('SELECT messages.id, messages.content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
+        this.nonBotMessagesStmt = this.db.prepare('SELECT messages.id, messages.content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0 LIMIT 10000');
         this.nonBotMessagesStmt.safeIntegers();
         this.markovRefsStmt = this.db.prepare(`
             SELECT messages.id AS 'messageID', channels.id AS 'channelID', channels.guild_id AS 'guildID', users.username, messages.content FROM markov_refs
@@ -35,10 +36,77 @@ class DB {
         `);
         this.markovRefsStmt.safeIntegers();
 
+        this.totalMessagesStmt = this.db.prepare(`SELECT COUNT(*) AS 'total' FROM messages`);
+        this.pepsiMessagesStmt = this.db.prepare(`SELECT COUNT(*) AS 'total' FROM messages WHERE content LIKE '%pepsi%'`);
+        this.mostPingedByHoopsStmt = this.db.prepare(`
+            SELECT COUNT(*) AS 'count', users.username
+            FROM user_mentions
+            INNER JOIN messages ON messages.id = user_mentions.message_id
+            INNER JOIN users ON users.id = user_mentions.user_id
+            WHERE user_mentions.message_id IN (SELECT markov_msg_id FROM markov_refs)
+            GROUP BY user_mentions.user_id
+            ORDER BY count DESC
+            LIMIT 1
+        `);
+        this.mostReferencedByHoopsStmt = this.db.prepare(`
+            SELECT COUNT(*) AS 'count', users.username
+            FROM markov_refs
+            INNER JOIN messages ON messages.id = markov_refs.ref_msg_id
+            INNER JOIN users ON users.id = messages.author_id
+            GROUP BY users.id
+            ORDER BY count DESC
+            LIMIT 1
+        `);
+        this.mostPingedRoleStmt = this.db.prepare(`
+            SELECT COUNT(*) AS 'count', roles.name
+            FROM role_mentions
+            INNER JOIN messages ON messages.id = role_mentions.message_id
+            INNER JOIN roles ON roles.id = role_mentions.role_id
+            WHERE messages.timestamp >= ?
+            GROUP BY role_mentions.role_id
+            ORDER BY 'count' DESC
+            LIMIT 1
+        `);
+
         this.clearAllMessagesStmt = this.db.prepare('DELETE FROM messages');
         this.clearAllReactionsStmt = this.db.prepare('DELETE FROM reactions');
         this.clearAllRoleMentionsStmt = this.db.prepare('DELETE FROM role_mentions');
         this.clearAllUserMentionsStmt = this.db.prepare('DELETE FROM user_mentions');
+    }
+
+    getTotalMessages() {
+        return this.totalMessagesStmt.get().total;
+    }
+
+    getPepsiMessagesCount() {
+        return this.pepsiMessagesStmt.get().total;
+    }
+
+    getMostPingedByHoops() {
+        const result = this.mostPingedByHoopsStmt.get();
+        if (result) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    getMostReferencedByHoops() {
+        const result = this.mostReferencedByHoopsStmt.get();
+        if (result) {
+            return result;
+        } else {
+            return null;
+        }
+    }
+
+    getMostPingedRoleSince(time) {
+        const result = this.mostPingedRoleStmt.get(time);
+        if (result) {
+            return result;
+        } else {
+            return null;
+        }
     }
 
     getAllNonBotMessages() {
@@ -105,6 +173,14 @@ class DB {
         this.removeAllMessageReactions(msg);
     }
 
+    insertRole(role) {
+        this.roleStmt.run({
+            id: role.id,
+            name: role.name,
+            guild_id: role.guild.id
+        });
+    }
+
     insertChannel(channel) {
         this.channelStmt.run({
             id: channel.id,
@@ -164,6 +240,8 @@ class DB {
                 role_id: role.id,
                 message_id: msg.id
             });
+
+            this.insertRole(role);
         }
 
         this.clearReactionStmt.run({

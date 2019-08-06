@@ -48,6 +48,12 @@ client.on('ready', () => {
     for (const channel of client.channels.values()) {
         db.insertChannel(channel);
     }
+
+    for (const guild of client.guilds.values()) {
+        for (const role of guild.roles.values()) {
+            db.insertRole(role);
+        }
+    }
 })
 
 client.login(DiscordToken);
