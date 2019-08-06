@@ -1,5 +1,6 @@
 import BaseModule from './module';
 import Markov from 'markov-strings';
+import longestCommonSubstring from './lcs';
 
 class MarkovModule extends BaseModule {
     constructor(markovData, db) {
@@ -21,7 +22,7 @@ class MarkovModule extends BaseModule {
     generateString(filter) {
         try {
             const result = this.markov.generate({
-                maxTries: 1000,
+                maxTries: 600,
                 filter
             });
 
@@ -52,13 +53,15 @@ class MarkovModule extends BaseModule {
         // * Must have some score
         // * Must not be too long
         // * Must not be a substring of one of the referenced messages
+        // * Must not have a ref which is just a substring of another ref
         // * If the user pinged the bot with some words, the string should
         //   include one of these words.
         const normalFilter = result =>
             result.refs.length >= 3 &&
             result.score > 5 &&
             result.string.length < 200 &&
-            !result.refs.some(x => x.string.includes(result.string));
+            !result.refs.some(x => x.string.includes(result.string)) &&
+            !result.refs.some(x => result.refs.some(y => x !== y && longestCommonSubstring(x.string, result.string).includes(longestCommonSubstring(y.string, result.string))));
 
         const fullFilter = result => normalFilter(result) &&
             result.string.toLowerCase().split(' ').some(w => words.includes(w));
