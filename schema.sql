@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS "channels" (
 );
 CREATE TABLE IF NOT EXISTS "markov_refs" (
 	"markov_msg_id"	INTEGER NOT NULL,
-	"ref_msg_id"	INTEGER NOT NULL
+	"ref_msg_id"	INTEGER NOT NULL,
+	"markov_db"		TEXT NOT NULL DEFAULT "dhimarkov"
 );
 CREATE TABLE IF NOT EXISTS "messages" (
 	"id"	INTEGER NOT NULL,
@@ -44,9 +45,13 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"discriminator"	TEXT NOT NULL,
 	PRIMARY KEY("id")
 );
+CREATE TABLE IF NOT EXISTS "versions" (
+	"version"	TEXT NOT NULL
+);
 CREATE UNIQUE INDEX IF NOT EXISTS "unique_markov_refs" ON "markov_refs" (
 	"markov_msg_id",
-	"ref_msg_id"
+	"ref_msg_id",
+	"markov_db"
 );
 CREATE UNIQUE INDEX IF NOT EXISTS "unique_reactions" ON "reactions" (
 	"message_id",

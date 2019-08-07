@@ -8,6 +8,9 @@ class DB {
         db.exec(schema);
 
         this.db = db;
+
+        this.migrateDatabase();
+
         this.msgStmt = this.db.prepare('REPLACE INTO messages VALUES (:id, :author_id, :channel_id, :timestamp, :content)');
         this.userStmt = this.db.prepare('REPLACE INTO users VALUES (:id, :bot, :username, :discriminator)');
         this.userMentionStmt = this.db.prepare('REPLACE INTO user_mentions VALUES (:user_id, :message_id)');
@@ -18,11 +21,11 @@ class DB {
         this.clearReactionStmt = this.db.prepare('DELETE FROM reactions WHERE message_id = :message_id');
         this.removeReactionStmt = this.db.prepare('DELETE FROM reactions WHERE message_id = :message_id AND user_id = :user_id AND emoji = :emoji');
         this.removeMsgStmt = this.db.prepare('DELETE FROM messages WHERE id = :message_id');
-        this.markovRefStmt = this.db.prepare('REPLACE INTO markov_refs VALUES (:markov_msg_id, :ref_msg_id)');
+        this.markovRefStmt = this.db.prepare('REPLACE INTO markov_refs VALUES (:markov_msg_id, :ref_msg_id, :markov_db)');
         this.channelStmt = this.db.prepare('REPLACE INTO channels VALUES (:id, :guild_id, :name, :type)');
         this.roleStmt = this.db.prepare('REPLACE INTO roles VALUES (:id, :name, :guild_id)');
 
-        this.latestMarkovStmt = this.db.prepare('SELECT messages.id, messages.content FROM markov_refs LEFT JOIN messages ON messages.id = markov_refs.markov_msg_id ORDER BY messages.timestamp DESC LIMIT 1');
+        this.latestMarkovStmt = this.db.prepare('SELECT messages.id, messages.content, markov_refs.markov_db FROM markov_refs LEFT JOIN messages ON messages.id = markov_refs.markov_msg_id ORDER BY messages.timestamp DESC LIMIT 1');
         this.latestMarkovStmt.safeIntegers();
         this.nonBotMessagesStmt = this.db.prepare('SELECT messages.id, messages.content FROM messages LEFT JOIN users ON messages.author_id = users.id WHERE users.bot = 0');
         this.nonBotMessagesStmt.safeIntegers();
@@ -35,6 +38,8 @@ class DB {
             ORDER BY messages.timestamp
         `);
         this.markovRefsStmt.safeIntegers();
+
+        this.markovIndicesStmt = this.db.prepare('SELECT ref_msg_id FROM markov_refs WHERE markov_msg_id = ?');
 
         this.totalMessagesStmt = this.db.prepare(`SELECT COUNT(*) AS 'total' FROM messages`);
         this.pepsiMessagesStmt = this.db.prepare(`SELECT COUNT(*) AS 'total' FROM messages WHERE content LIKE '%pepsi%'`);
@@ -72,6 +77,22 @@ class DB {
         this.clearAllReactionsStmt = this.db.prepare('DELETE FROM reactions');
         this.clearAllRoleMentionsStmt = this.db.prepare('DELETE FROM role_mentions');
         this.clearAllUserMentionsStmt = this.db.prepare('DELETE FROM user_mentions');
+    }
+
+    migrateDatabase() {
+        let getVersions = this.db.prepare('SELECT version FROM versions');
+        let insertVersion = this.db.prepare('INSERT INTO versions VALUES(:version)');
+        let dbVersions = getVersions.all().map(x => x.version);
+        let fileVersions = fs.readdirSync('./db_versions').filter(v => v.endsWith('.sql')).map(v => v.slice(0, -4));
+
+        let runVersions = fileVersions.filter(v => !dbVersions.includes(v));
+        for (let version of runVersions) {
+            let migration = fs.readFileSync('./db_versions/' + version + '.sql', 'utf8');
+            this.db.exec(migration);
+            insertVersion.run({
+                version: version,
+            });
+        }
     }
 
     getTotalMessages() {
@@ -129,10 +150,17 @@ class DB {
         return this.markovRefsStmt.all(markovMsgID);
     }
 
-    insertMarkovReference(markovMsg, referencedMsgID) {
+    getMarkovIndices(markovMsgID) {
+        // Use and abuse the ref_msg_id column 'cause idk makes sense I guess
+        return this.markovIndicesStmt.all(markovMsgID);
+    }
+
+    insertMarkovReference(markovMsg, referencedMsgID, markovDb) {
+        if (typeof markovDb === 'undefined') markovDb = "dhimarkov";
         this.markovRefStmt.run({
             markov_msg_id: markovMsg.id,
-            ref_msg_id: referencedMsgID
+            ref_msg_id: referencedMsgID,
+            markov_db: markovDb,
         });
     }
 

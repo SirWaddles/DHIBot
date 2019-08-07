@@ -24,7 +24,7 @@ class DHIMarkovModule extends MarkovModule {
 
     onMessageSent(originalMsg, markovMsg, markovResult) {
         for (const ref of markovResult.refs) {
-            this.db.insertMarkovReference(markovMsg, ref.messageID);
+            this.db.insertMarkovReference(markovMsg, ref.messageID, "dhimarkov");
         }
     }
 }
