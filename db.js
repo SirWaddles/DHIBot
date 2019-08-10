@@ -187,6 +187,18 @@ class DB {
         });
     }
 
+    getAllReactions(reactions) {
+        let statement = this.db.prepare(`
+            SELECT m.id, u.id AS m_id, u.username AS m_author, ra.id AS r_id, ra.username AS r_author, r.emoji
+            FROM reactions r
+            INNER JOIN messages m ON m.id = r.message_id
+            INNER JOIN users u ON m.author_id = u.id
+            INNER JOIN users ra ON r.user_id = ra.id
+            WHERE r.emoji IN (` + Array(reactions.length).fill("?").join(", ") + ")");
+
+        return statement.all(reactions);
+    }
+
     removeAllMessageReactions(msg) {
         this.clearReactionStmt.run({
             message_id: msg.id
