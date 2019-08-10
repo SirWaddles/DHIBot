@@ -1,10 +1,16 @@
 import BaseModule from './module';
 import Discord from 'discord.js';
 
-const REACTION_RATINGS = ["0", "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"];
+const REACTION_RATINGS = ["0⃣", "1⃣", "2⃣", "3⃣", "4⃣", "5⃣", "6⃣", "7⃣", "8⃣", "9⃣", "🔟"];
 
 function sumReduce(acc, v) {
     return acc + v;
+}
+
+function GetMemeScore(m, averages) {
+    let weight = Math.min((0.66 * m.reactions.length) / averages.avg_rating_count, 1);
+    let average = m.reactions.map(r => r.rating).reduce(sumReduce, 0) / m.reactions.length;
+    return (weight * average) + ((1 - weight) * averages.average_rating);
 }
 
 class StatsModule extends BaseModule {
@@ -27,7 +33,8 @@ class StatsModule extends BaseModule {
             embed = embed.addField('Game of the week', mostPingedRole.name, true);
         }
 
-        const memerScores = this.getMemerScores();
+        const memes = this.getMemes();
+        const memerScores = this.getMemerScores(memes);
         if (memerScores.length > 0) {
             embed = embed.addField('Best Memer', memerScores[0].author.username + " (" + memerScores[0].score.toFixed(2) + ")", true);
             let worstMemer = memerScores[memerScores.length - 1];
@@ -41,11 +48,20 @@ class StatsModule extends BaseModule {
         msg.channel.send(embed);
     }
 
-    getMemerScores() {
-        return this.getMemerStats().map(v => ({
+    getMemeAverages(memes) {
+        let ratings = memes.map(v => v.reactions.map(r => r.rating).reduce(sumReduce, 0) / v.reactions.length);
+        return {
+            average_rating: ratings.reduce(sumReduce, 0) / ratings.length,
+            max_rating_count: memes.map(r => r.reactions.length).reduce((acc, v) => Math.max(acc, v), 0),
+            avg_rating_count: memes.map(r => r.reactions.length).reduce(sumReduce, 0) / memes.length,
+        };
+    }
+
+    getMemerScores(memes) {
+        return this.getMemerStats(memes).map(v => ({
             author: v.author,
             // Take the average rating, but bias slightly against a small number of memes.
-            score: v.average_rating - (5/(v.total_memes + 0.25)),
+            score: v.average_score - (5/(v.total_memes + 0.25)),
             average: v.average_rating,
         })).sort((a, b) => {
             if (a.score < b.score) return 1;
@@ -54,8 +70,8 @@ class StatsModule extends BaseModule {
         });
     }
 
-    getMemerStats() {
-        let memes = this.getMemes();
+    getMemerStats(memes) {
+        const averages = this.getMemeAverages(memes);
         let memers = Object.values(memes.reduce((acc, v) => {
             if (!acc.hasOwnProperty(v.author.id)) {
                 acc[v.author.id] = {
@@ -70,9 +86,11 @@ class StatsModule extends BaseModule {
         memers = memers.map(mr => {
             mr.memes = mr.memes.map(m => Object.assign(m, {
                 average_rating: m.reactions.map(r => r.rating).reduce(sumReduce, 0) / m.reactions.length,
+                meme_score: GetMemeScore(m, averages),
             }));
             return Object.assign(mr, {
                 average_rating: mr.memes.map(v => v.average_rating).reduce(sumReduce, 0) / mr.memes.length,
+                average_score: mr.memes.map(v => v.meme_score).reduce(sumReduce, 0) / mr.memes.length,
                 total_memes: mr.memes.length,
             });
         });
@@ -98,6 +116,8 @@ class StatsModule extends BaseModule {
                     reactions: [],
                 };
             }
+            // Just skip any double ratings. I had thought about getting the maximum rating, but people shouldn't be doing this.
+            if (acc[v.id].reactions.map(a => a.author.id).includes(v.r_id)) return acc;
             acc[v.id].reactions.push({
                 author: {
                     id: v.r_id,
