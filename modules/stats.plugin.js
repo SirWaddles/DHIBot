@@ -29,9 +29,9 @@ class StatsModule extends BaseModule {
 
         const memerScores = this.getMemerScores();
         if (memerScores.length > 0) {
-            embed = embed.addField('Best Memer', memerScores[0].author.username + " (" + memerScores[0].score.toFixed(2) + ")");
+            embed = embed.addField('Best Memer', memerScores[0].author.username + " (" + memerScores[0].score.toFixed(2) + ")", true);
             let worstMemer = memerScores[memerScores.length - 1];
-            embed = embed.addField('Worst Memer', worstMemer.author.username + " (" + worstMemer.score.toFixed(2) + ")");
+            embed = embed.addField('Worst Memer', worstMemer.author.username + " (" + worstMemer.score.toFixed(2) + ")", true);
         }
 
         embed = embed.addField('Total messages', this.db.getTotalMessages(), true)
