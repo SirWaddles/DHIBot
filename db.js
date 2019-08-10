@@ -67,11 +67,61 @@ class DB {
             ORDER BY 'count' DESC
             LIMIT 1
         `);
+        this.ratingStatsStmt = this.db.prepare(`
+            SELECT avg(ratingCount) AS 'averageRatings', max(ratingCount) AS 'maxRatings', avg(averageRating) AS 'overallAverageRating' FROM (
+                SELECT COUNT(*) AS 'ratingCount', avg(CASE unicode(reactions.emoji)
+                   WHEN 48 THEN 0
+                   WHEN 49 THEN 1
+                   WHEN 50 THEN 2
+                   WHEN 51 THEN 3
+                   WHEN 52 THEN 4
+                   WHEN 53 THEN 5
+                   WHEN 54 THEN 6
+                   WHEN 55 THEN 7
+                   WHEN 56 THEN 8
+                   WHEN 57 THEN 9
+                   WHEN 128287 THEN 10
+                END) AS 'averageRating'
+                FROM messages
+                INNER JOIN reactions ON reactions.message_id = messages.id
+                WHERE messages.channel_id = ? AND unicode(reactions.emoji) IN (48,49,50,51,52,53,54,55,56,57,128287)
+                GROUP BY messages.id
+            )
+        `);
+        this.allRatingsStmt = this.db.prepare(`
+            SELECT ((weight * averageRating) + ((1 - weight) * :overallAverageRating)) AS 'rating', id FROM (
+                SELECT avg(CASE unicode(reactions.emoji)
+                   WHEN 48 THEN 0
+                   WHEN 49 THEN 1
+                   WHEN 50 THEN 2
+                   WHEN 51 THEN 3
+                   WHEN 52 THEN 4
+                   WHEN 53 THEN 5
+                   WHEN 54 THEN 6
+                   WHEN 55 THEN 7
+                   WHEN 56 THEN 8
+                   WHEN 57 THEN 9
+                   WHEN 128287 THEN 10
+                END) AS 'averageRating', min(0.66*COUNT(*)/:averageRatings, 1) AS 'weight', messages.id
+                FROM messages
+                INNER JOIN reactions ON reactions.message_id = messages.id
+                WHERE messages.channel_id = :channelID AND unicode(reactions.emoji) IN (48,49,50,51,52,53,54,55,56,57,128287) AND messages.timestamp >= :since
+                GROUP BY messages.id
+            )
+        `);
+        this.allRatingsStmt.safeIntegers();
 
         this.clearAllMessagesStmt = this.db.prepare('DELETE FROM messages');
         this.clearAllReactionsStmt = this.db.prepare('DELETE FROM reactions');
         this.clearAllRoleMentionsStmt = this.db.prepare('DELETE FROM role_mentions');
         this.clearAllUserMentionsStmt = this.db.prepare('DELETE FROM user_mentions');
+    }
+
+    getAllRatingsForChannelSince(channelID, since) {
+        const stats = this.ratingStatsStmt.get(channelID);
+        stats['channelID'] = channelID;
+        stats['since'] = since;
+        return this.allRatingsStmt.all(stats);
     }
 
     getTotalMessages() {

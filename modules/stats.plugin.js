@@ -16,9 +16,25 @@ class StatsModule extends BaseModule {
             embed = embed.addField('Most referenced by Hoops', `${mostReferenced.username} (${mostReferenced.count} times)`, true);
         }
 
-        const mostPingedRole = this.db.getMostPingedRoleSince((new Date).getTime() - (7*24*60*60*1000));
+        const aWeekAgo = (new Date).getTime() - (7*24*60*60*1000);
+        const mostPingedRole = this.db.getMostPingedRoleSince(aWeekAgo);
         if (mostPingedRole !== null) {
             embed = embed.addField('Game of the week', mostPingedRole.name, true);
+        }
+
+        const ratings = this.db.getAllRatingsForChannelSince('447038181431574528', aWeekAgo); // maymays channel
+        if (ratings.length > 0) {
+            const averageRating = ratings.reduce((p, c) => p + c.rating, 0) / ratings.length;
+            embed = embed.addField('Average meme rating this week', averageRating.toFixed(2));
+
+            const lowestRating = ratings.reduce((p, c) => {
+                if (p === null || c.rating < p.rating) {
+                    return c;
+                } else {
+                    return p;
+                }
+            }, null);
+            embed = embed.addField('Worst meme this week', `[From ${}]()${lowestRating.toFixed(2)}`);
         }
 
         embed = embed.addField('Total messages', this.db.getTotalMessages(), true)
@@ -43,3 +59,4 @@ Other ideas:
 ** harshest critic (lowest average vote)
 ** easily impressed (highest average vote)
 */
+
