@@ -1,0 +1,21 @@
+import BaseModule from './module';
+import MemeData from './memes';
+
+class LeaderboardModule extends BaseModule {
+    receiveMessage(msg) {
+        let memeData = new MemeData(this.db);
+        let globalScores = memeData.getMemerScores();
+        msg.channel.send(
+            "```\n" +
+            "Name          Score Average\n" +
+            globalScores.map(v => v.author.username.padEnd(14, " ") + v.score.toFixed(2) + "    " + v.average.toFixed(2)).join("\n") +
+            "\n```"
+        );
+    }
+
+    testMessage(msg) {
+        return msg.content.toLowerCase().startsWith('!leaderboard');
+    }
+}
+
+export default LeaderboardModule;
