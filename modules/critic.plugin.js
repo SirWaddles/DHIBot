@@ -35,7 +35,7 @@ class CriticModule extends BaseModule {
             .addField('Average Rating', localAverages.average_rating.toFixed(2), true)
             .addField('Favourite Memer', localScores[0].author.username, true)
             .addField('Least Favourite Memer', localScores[localScores.length - 1].author.username, true)
-            .addField('Your Deviation', localAverages.devation.toFixed(2), true)
+            .addField('Your Deviation', localAverages.deviation.toFixed(2), true)
             .addField('Global Average', globalAverages.average_rating.toFixed(2), true)
             .addField('Global Deviation', globalAverages.deviation.toFixed(2), true);
 
