@@ -7,8 +7,8 @@ class LeaderboardModule extends BaseModule {
         let globalScores = memeData.getMemerScores();
         msg.channel.send(
             "```\n" +
-            "Name          Score Average\n" +
-            globalScores.map(v => v.author.username.padEnd(14, " ") + v.score.toFixed(2) + "    " + v.average.toFixed(2)).join("\n") +
+            "Name          Score   Average\n" +
+            globalScores.map(v => v.author.username.padEnd(14, " ") + v.score.toFixed(2).padEnd(8, ' ') + v.average.toFixed(2)).join("\n") +
             "\n```"
         );
     }

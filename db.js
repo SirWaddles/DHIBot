@@ -187,7 +187,7 @@ class DB {
         });
     }
 
-    getAllReactions(reactions, user) {
+    getAllReactions(reactions, channelId, user) {
         let query = `
             SELECT m.id, u.id AS m_id, u.username AS m_author, ra.id AS r_id, ra.username AS r_author, r.emoji
             FROM reactions r
@@ -201,6 +201,11 @@ class DB {
         if (typeof user !== 'undefined') {
             query += " AND ra.id = ?";
             params.push(user.id)
+        }
+
+        if (typeof channelId !== 'undefined') {
+            query += " AND m.channel_id = ?";
+            params.push(channelId);
         }
 
         let statement = this.db.prepare(query);

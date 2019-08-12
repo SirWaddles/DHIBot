@@ -78,7 +78,7 @@ class MemeData {
     }
 
     getMemes(db, user) {
-        let reactions = db.getAllReactions(REACTION_RATINGS, user);
+        let reactions = db.getAllReactions(REACTION_RATINGS, '447038181431574528', user);
         const reaction_lookup = REACTION_RATINGS.reduce((acc, v, idx) => {
             acc[v] = idx;
             return acc;
