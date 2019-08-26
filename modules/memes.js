@@ -34,6 +34,7 @@ function getWeightedScore(memes) {
         totalWeights += dayWeight;
         totalScore += meme.meme_score * dayWeight;
     }
+    if (totalWeights <= 0) return 0;
     return totalScore / totalWeights;
 }
 
