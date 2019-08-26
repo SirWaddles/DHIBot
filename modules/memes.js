@@ -30,7 +30,7 @@ function getWeightedScore(memes) {
     let totalWeights = 0;
     let totalScore = 0;
     for (let meme of memes) {
-        let dayWeight = Math.max(0, 60 - getDaysOld(meme.timestamp));
+        let dayWeight = Math.max(0, 30 - getDaysOld(meme.timestamp));
         totalWeights += dayWeight;
         totalScore += meme.meme_score * dayWeight;
     }
