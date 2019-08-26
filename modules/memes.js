@@ -22,6 +22,21 @@ function averageSort(a, b) {
     return 0;
 }
 
+function getDaysOld(timestamp) {
+    return (Date.now() - timestamp) / (1000 * 60 * 60 * 24);
+}
+
+function getWeightedScore(memes) {
+    let totalWeights = 0;
+    let totalScore = 0;
+    for (let meme of memes) {
+        let dayWeight = Math.max(0, 60 - getDaysOld(meme.timestamp));
+        totalWeights += dayWeight;
+        totalScore += meme.meme_score * dayWeight;
+    }
+    return totalScore / totalWeights;
+}
+
 class MemeData {
     constructor(db, user) {
         this.memes = this.getMemes(db, user);
@@ -44,7 +59,7 @@ class MemeData {
         return this.getMemerStats(this.memes).map(v => ({
             author: v.author,
             // Take the average rating, but bias slightly against a small number of memes.
-            score: v.average_score - (5/(v.total_memes + 0.25)),
+            score: v.weighted_score - (5/(v.total_memes + 0.25)),
             average: v.average_rating,
         })).sort(this.user ? averageSort : scoreSort);
     }
@@ -69,7 +84,7 @@ class MemeData {
             }));
             return Object.assign(mr, {
                 average_rating: mr.memes.map(v => v.average_rating).reduce(sumReduce, 0) / mr.memes.length,
-                average_score: mr.memes.map(v => v.meme_score).reduce(sumReduce, 0) / mr.memes.length,
+                weighted_score: getWeightedScore(mr.memes, averages),
                 total_memes: mr.memes.length,
             });
         });
@@ -92,6 +107,7 @@ class MemeData {
                         id: v.m_id,
                         username: v.m_author,
                     },
+                    timestamp: v.m_stamp,
                     reactions: [],
                 };
             }

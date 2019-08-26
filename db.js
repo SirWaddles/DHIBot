@@ -189,7 +189,7 @@ class DB {
 
     getAllReactions(reactions, channelId, user) {
         let query = `
-            SELECT m.id, u.id AS m_id, u.username AS m_author, ra.id AS r_id, ra.username AS r_author, r.emoji
+            SELECT m.id, u.id AS m_id, u.username AS m_author, m.timestamp AS m_stamp, ra.id AS r_id, ra.username AS r_author, r.emoji
             FROM reactions r
             INNER JOIN messages m ON m.id = r.message_id
             INNER JOIN users u ON m.author_id = u.id
