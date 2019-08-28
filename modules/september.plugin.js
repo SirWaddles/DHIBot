@@ -9,8 +9,8 @@ class SeptemberModule extends BaseModule {
         this.can_post = false;
 
         const self = this;
-        var nextInHours = Math.random() * (18 - 8) + 8;
-        setInterval(() => {
+        var nextInHours = Math.random() * 10 + 8;
+        setTimeout(() => {
         	self.can_post = true;
         }, 1000 * 60 * 60 * nextInHours);
     }
