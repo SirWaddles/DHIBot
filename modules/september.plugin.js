@@ -1,6 +1,11 @@
 import BaseModule from './module';
 
 class SeptemberModule extends BaseModule {
+    constructor(db) {
+        super(db);
+        this.can_post = true;
+    }
+
     receiveMessage(msg) {
         msg.channel.send(
             "https://www.youtube.com/watch?v=Gs069dndIYk"
