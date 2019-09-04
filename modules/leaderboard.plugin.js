@@ -3,6 +3,10 @@ import MemeData from './memes';
 
 class LeaderboardModule extends BaseModule {
     receiveMessage(msg) {
+        if (Math.random() > 0.6) {
+            msg.channel.send("You all suck at memeing. Try again next time.")
+            return;
+        }
         let memeData = new MemeData(this.db);
         let globalScores = memeData.getMemerScores();
         msg.channel.send(

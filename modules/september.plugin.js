@@ -3,7 +3,15 @@ import BaseModule from './module';
 class SeptemberModule extends BaseModule {
     constructor(db) {
         super(db);
-        this.can_post = true;
+        this.can_post = false;
+        this.startTimer();
+    }
+
+    startTimer() {
+        var nextInHours = Math.random() * 10 + 8;
+        setTimeout(() => {
+        	this.can_post = true;
+        }, 1000 * 60 * 60 * nextInHours);
     }
 
     receiveMessage(msg) {
@@ -12,11 +20,7 @@ class SeptemberModule extends BaseModule {
         );
 
         this.can_post = false;
-
-        var nextInHours = Math.random() * 10 + 8;
-        setTimeout(() => {
-        	this.can_post = true;
-        }, 1000 * 60 * 60 * nextInHours);
+        this.startTimer();
     }
 
     testMessage(msg) {
