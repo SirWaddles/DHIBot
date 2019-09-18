@@ -8,10 +8,9 @@ class SeptemberModule extends BaseModule {
     }
 
     startTimer() {
-        var nextInHours = Math.random() * 10 + 8;
         setTimeout(() => {
         	this.can_post = true;
-        }, 1000 * 60 * 60 * nextInHours);
+        }, 1000 * 60 * 60 * 8);
     }
 
     receiveMessage(msg) {
@@ -25,7 +24,7 @@ class SeptemberModule extends BaseModule {
 
     testMessage(msg) {
     	var today = new Date();
-        return this.can_post && today.getMonth() == 8;
+        return this.can_post && today.getMonth() == 8 && today.getDate() == 1;
     }
 }
 
