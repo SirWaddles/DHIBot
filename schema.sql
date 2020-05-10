@@ -66,4 +66,5 @@ CREATE UNIQUE INDEX IF NOT EXISTS "unique_user_mentions" ON "user_mentions" (
 	"user_id",
 	"message_id"
 );
+INSERT INTO versions VALUES('20190807_simpsons_refs');
 COMMIT;
