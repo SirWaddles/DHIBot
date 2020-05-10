@@ -2,7 +2,8 @@ import Discord from 'discord.js';
 import { DiscordToken } from './tokens';
 import DB from './db';
 
-const db = new DB('data.db', 'schema.sql');
+const dbPath = process.env.DB_PATH || 'data.db';
+const db = new DB(dbPath, 'schema.sql');
 
 let moduleContext = require.context('./modules/', false, /\.plugin\.js$/);
 let messageModules = moduleContext.keys().map(moduleContext); // wat
