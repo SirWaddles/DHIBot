@@ -8,7 +8,7 @@ class MyDudes extends BaseModule {
     }
 
     testMessage(msg) {
-        return msg.toLowerCase() === "what day is it?";
+        return msg.content.toLowerCase() === "what day is it?";
     }
 }
 
