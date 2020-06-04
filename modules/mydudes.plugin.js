@@ -4,7 +4,11 @@ class MyDudes extends BaseModule {
     receiveMessage(msg) {
         let now = new Date();
         let day = now.toLocaleDateString('en-AU', { weekday: 'long' });
-        msg.reply("It's " + day + " my dudes.");
+        if (day === "Wednesday") {
+            msg.reply("It is *Wednesday* my dudes.");
+        } else {
+            msg.reply("It's " + day + ".");
+        }
     }
 
     testMessage(msg) {
