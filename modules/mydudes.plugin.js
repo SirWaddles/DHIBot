@@ -3,7 +3,7 @@ import BaseModule from './module';
 class MyDudes extends BaseModule {
     receiveMessage(msg) {
         let now = new Date();
-        let day = now.toLocaleDateString('en-AU', { weekday: 'long' });
+        let day = now.toLocaleDateString('en-AU', { weekday: 'long', timeZone: 'Australia/Melbourne' });
         if (day === "Wednesday") {
             msg.reply("It is *Wednesday* my dudes.");
         } else {
