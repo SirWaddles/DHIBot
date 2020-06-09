@@ -21,7 +21,7 @@ const badGames = [
     'apb',
     'minecraft',
     'killing floor',
-	'monster hunter',
+    'monster hunter',
     'warframe',
     'apex legends',
 ];
