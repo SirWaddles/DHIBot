@@ -26,12 +26,19 @@ const Locations = {
 
 class APBModule extends BaseModule {
     async receiveMessage(msg) {
-        const rawStats = await GetCurrentStats();
-        const stats = rawStats.filter(v => v.threat == "2" && v.world_uid == "3002" && Object.keys(WorldMap).includes(v.district_instance_type_sdd));
-        const finalStat = stats.reduce((acc, v) => {
-            if ((v.enforcers + v.criminals) > (acc.enforcers + acc.criminals)) return v;
-            return acc;
-        });
+        let finalStat = [];
+
+        try {
+            const rawStats = await GetCurrentStats();
+            const stats = rawStats.filter(v => v.threat == "2" && v.world_uid == "3002" && Object.keys(WorldMap).includes(v.district_instance_type_sdd));
+            finalStat = stats.reduce((acc, v) => {
+                if ((v.enforcers + v.criminals) > (acc.enforcers + acc.criminals)) return v;
+                return acc;
+            });
+        } catch (e) {
+            msg.channel.send('Simp borked it.');
+            return;
+        }
 
         const embed = new Discord.RichEmbed();
         embed.setTitle(WorldMap[finalStat.district_instance_type_sdd].name + ' ' + Locations[finalStat.district_location_id] + ' Bronze');
