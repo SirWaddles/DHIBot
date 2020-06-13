@@ -48,8 +48,12 @@ class APBModule extends BaseModule {
         embed.addField('Enforcers', finalStat.enforcers, true);
         embed.addField('Criminals', finalStat.criminals, true);
         embed.setTimestamp(new Date(finalStat.time));
+        
+        if (this.last_recv_msg) this.last_recv_msg.delete();
+        if (this.last_sent_msg) this.last_sent_msg.delete();
 
-        msg.channel.send(embed);
+        this.last_recv_msg = msg;
+        this.last_sent_msg = await msg.channel.send(embed);
     }
 
     testMessage(msg) {
